@@ -21,8 +21,6 @@
 
 @property (nonatomic, readwrite, assign) unsigned long long bytesReceived;
 
-- (void)writeDataToOutputStream;
-
 - (long long)contentLength;
 
 - (void)abortWithError:(NSError *)error;
