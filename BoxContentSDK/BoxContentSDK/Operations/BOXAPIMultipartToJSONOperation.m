@@ -509,24 +509,24 @@ static NSString * BOXAPIMultipartContentTypeHeader(void)
 
 - (void)initStreams
 {
-    dispatch_once(&_pred, ^{
+    if (_inputStream == nil || _outputStream == nil) {
         CFReadStreamRef readStream;
         CFWriteStreamRef writeStream;
         CFStreamCreateBoundPair(NULL, &readStream, &writeStream, BOX_API_OUTPUT_STREAM_BUFFER_SIZE);
         _inputStream = CFBridgingRelease(readStream);
         _outputStream = CFBridgingRelease(writeStream);
-
+        
         _outputStream.delegate = self;
         [_outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-
+        
         [_outputStream open];
-
+        
         BOXAPIMultipartPiece *initialPiece = [self.formPieces objectAtIndex:0];
         initialPiece.hasInitialBoundary = YES;
-
+        
         BOXAPIMultipartPiece *finalPiece = [self.formPieces lastObject];
         finalPiece.hasFinalBoundary = YES;
-    });
+    }
 }
 
 - (void)close
