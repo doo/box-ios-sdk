@@ -81,7 +81,6 @@
             self.lock = [[BOXFileLock alloc] initWithJSON:lock];
         }
         
-#ifdef BOX_REPRESENTATIONS_ENDPOINT
         // Parse Representations.
         NSDictionary *representationsJSON = [NSJSONSerialization box_ensureObjectForKey:BOXAPIObjectKeyRepresentations
                                                                           inDictionary:JSONResponse
@@ -97,8 +96,6 @@
             }
             self.representations = [NSArray arrayWithArray:tempRepresentations];
         }
-#endif
-    
     }
     return self;
 }
@@ -144,6 +141,11 @@
         NSNumber *canSetShareAccess = permissions[BOXAPIObjectKeyCanSetShareAccess];
         if (canSetShareAccess) {
             self.canSetShareAccess = canSetShareAccess.boolValue ? BOXAPIBooleanYES : BOXAPIBooleanNO;
+        }
+        
+        NSNumber *canInviteCollaborator = permissions[BOXAPIObjectKeyCanInviteCollaborator];
+        if (canInviteCollaborator != nil) {
+            self.canInviteCollaborator = canInviteCollaborator.boolValue ? BOXAPIBooleanYES : BOXAPIBooleanNO;
         }
     }
 }

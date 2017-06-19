@@ -8,6 +8,9 @@
 
 #import "BOXAPIOperation_Private.h"
 #import "BOXAPIAppUsersAuthOperation.h"
+#import "BOXContentSDKErrors.h"
+#import "BOXLog.h"
+#import "BOXAbstractSession.h"
 
 #define BOXAccessTokenKey @"BOXAccessTokenKey"
 #define BOXAccessTokenExpirationKey @"BOXAccessTokenExpirationKey"
@@ -20,7 +23,7 @@
     
     if ([self isReady]) {
         self.state = BOXAPIOperationStateExecuting;
-        
+
         [self performSelector:@selector(executeOperation)
                      onThread:[[self class] globalAPIOperationNetworkThread]
                    withObject:nil

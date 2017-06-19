@@ -5,15 +5,10 @@
 
 #import "BOXRequestWithSharedLinkHeader.h"
 
-@class ALAsset;
-@class ALAssetsLibrary;
-
 @interface BOXFileUploadRequest : BOXRequestWithSharedLinkHeader
 
 @property (nonatomic, readwrite, strong) NSString *fileName;
 @property (nonatomic, readonly, strong) NSString *folderID;
-@property (nonatomic, readonly, strong) ALAsset *asset;
-@property (nonatomic, readonly, strong) ALAssetsLibrary *assetsLibrary;
 @property (nonatomic, readwrite, strong) NSDate *contentCreatedAt;
 @property (nonatomic, readwrite, strong) NSDate *contentModifiedAt;
 @property (nonatomic, readwrite, assign) BOOL requestAllFileFields;
@@ -23,8 +18,11 @@
 @property (nonatomic, readwrite, assign) BOOL enableCheckForCorruptionInTransit;
 
 - (instancetype)initWithPath:(NSString *)filePath targetFolderID:(NSString *)folderID;
+
+//initialize a request which will run in the background even if app terminates if uploadMultipartCopyFilePath is provided
+- (instancetype)initWithPath:(NSString *)filePath targetFolderID:(NSString *)folderID uploadMultipartCopyFilePath:(NSString *)uploadMultipartCopyFilePath associateId:(NSString *)associateId;
+
 - (instancetype)initWithName:(NSString *)fileName targetFolderID:(NSString *)folderID data:(NSData *)data;
-- (instancetype)initWithALAsset:(ALAsset *)asset assetsLibrary:(ALAssetsLibrary *)assetsLibrary targetForlderID:(NSString *)folderID;
 - (void)performRequestWithProgress:(BOXProgressBlock)progressBlock completion:(BOXFileBlock)completionBlock;
 
 @end

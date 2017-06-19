@@ -8,24 +8,31 @@
 
 #import "BOXSampleAppDelegate.h"
 #import "BOXAuthenticationPickerViewController.h"
+#import "BOXSampleAppSessionManager.h"
 
-@interface BOXSampleAppDelegate ()
+#import <BoxContentSDK/BOXContentSDK.h>
+
+@interface BOXSampleAppDelegate () <BOXURLSessionManagerDelegate>
 
 @end
-
 
 @implementation BOXSampleAppDelegate
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-#warning Set the client ID and client secret that can be retrieved by creating an application at http://developers.box.com
+#error Set the client ID and client secret that can be retrieved by creating an application at http://developers.box.com
     [BOXContentClient setClientID:@"your_client_id" clientSecret:@"your_client_secret"];
     
     BOXAuthenticationPickerViewController *authenticationController = [[BOXAuthenticationPickerViewController alloc]init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:authenticationController];
     self.window.rootViewController = navController;
     [self.window makeKeyAndVisible];
-    
+
+    [BOXContentClient oneTimeSetUpInAppToSupportBackgroundTasksWithDelegate:self
+                                                               rootCacheDir:[BOXSampleAppSessionManager rootCacheDir]
+                                                                 completion:^(NSError *error) {
+        BOXAssert(error == nil, @"Failed to set up to support background tasks with error %@", error);
+    }];
     return YES;
 }
 
@@ -49,6 +56,19 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
+{
+    NSLog(@"handleEventsForBackgroundURLSession identifier %@", identifier);
+    [BOXContentClient oneTimeSetUpInAppToSupportBackgroundTasksWithDelegate:self rootCacheDir:[BOXSampleAppSessionManager rootCacheDir] completion:^(NSError *error) {
+        BOXAssert(error == nil, @"Failed to set up to support background tasks with error %@", error);
+    }];
+    [BOXContentClient reconnectWithBackgroundSessionIdFromExtension:identifier completion:^(NSError *error) {
+        BOXAssert(error == nil, @"Failed to reconnect with background session from extension with error %@", error);
+    }];
+
+    completionHandler();
 }
 
 @end

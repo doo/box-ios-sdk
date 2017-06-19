@@ -11,15 +11,6 @@
 #define BOX_CONTENT_SDK_IDENTIFIER @"box-content-sdk"
 #define BOX_CONTENT_SDK_VERSION @"1.0.14"
 
-// API URLs
-extern NSString *const BOXAPIBaseURL;
-extern NSString *const BOXAPIAuthBaseURL;
-extern NSString *const BOXAPIUploadBaseURL;
-
-// API Versions
-extern NSString *const BOXAPIVersion;
-extern NSString *const BOXAPIUploadAPIVersion;
-
 // API Resources
 extern NSString *const BOXAPIResourceFolders;
 extern NSString *const BOXAPIResourceFiles;
@@ -32,6 +23,7 @@ extern NSString *const BOXAPIResourceEvents;
 extern NSString *const BOXAPIResourceCollaborations;
 extern NSString *const BOXAPIResourceSearch;
 extern NSString *const BOXAPIResourceMetadataTemplates;
+extern NSString *const BOXAPIResourceRecentItems;
 
 // API Metadata Template Scope
 extern NSString *const BOXAPITemplateScopeEnterprise;
@@ -62,10 +54,12 @@ extern BOXAPIHTTPMethod *const BOXAPIHTTPMethodPUT;
 typedef NSString BOXAPIHTTPHeader;
 extern BOXAPIHTTPHeader *const BOXAPIHTTPHeaderAuthorization;
 extern BOXAPIHTTPHeader *const BOXAPIHTTPHeaderContentType;
+extern BOXAPIHTTPHeader *const BOXAPIHTTPHeaderContentLength;
 extern BOXAPIHTTPHeader *const BOXAPIHTTPHeaderContentMD5;
 extern BOXAPIHTTPHeader *const BOXAPIHTTPHeaderIfMatch;
 extern BOXAPIHTTPHeader *const BOXAPIHTTPHeaderIfNoneMatch;
 extern BOXAPIHTTPHeader *const BOXAPIHTTPHeaderBoxAPI;
+extern BOXAPIHTTPHeader *const BOXAPIHTTPHeaderXRepHints;
 
 // OAuth2 constants
 // Authorization code response
@@ -96,6 +90,7 @@ extern NSString *const BOXOAuth2AuthDelegationNewClientKey;
 
 // Notifications
 extern NSString *const BOXUserWasLoggedOutDueToErrorNotification;
+extern NSString *const BOXAuthOperationDidCompleteNotification;
 
 // Item Types
 typedef NSString BOXAPIItemType;
@@ -109,6 +104,7 @@ extern BOXAPIItemType *const BOXAPIItemTypeEvent;
 extern BOXAPIItemType *const BOXAPIItemTypeCollaboration;
 extern BOXAPIItemType *const BOXAPIItemTypeGroup;
 extern BOXAPIItemType *const BOXAPIItemTypeFileVersion;
+extern BOXAPIItemType *const BOXAPIItemTypeRecentItem;
 
 // Shared Link Access Levels
 typedef NSString BOXSharedLinkAccessLevel;
@@ -166,17 +162,18 @@ extern BOXRepresentationType *const BOXRepresentationTypeHLS;
 extern BOXRepresentationType *const BOXRepresentationTypeCrocodoc;
 extern BOXRepresentationType *const BOXRepresentationTypeDICOM;
 
+// Representations URL Template
+extern NSString *const BOXRepresentationTemplateKeyAccessPath;
+
+// Representation Template Value
+extern NSString *const BOXRepresentationTemplateValueHLSManifiest;
+
 // Representation Status
 typedef NSString BOXRepresentationStatus;
 extern BOXRepresentationStatus *const BOXRepresentationStatusSuccess;
 extern BOXRepresentationStatus *const BOXRepresentationStatusPending;
 extern BOXRepresentationStatus *const BOXRepresentationStatusNone;
 extern BOXRepresentationStatus *const BOXRepresentationStatusError;
-
-// Representation content type
-typedef NSString BOXRepresentationContentType;
-extern BOXRepresentationContentType *const BOXRepresentationContentTypeAsset;
-extern BOXRepresentationContentType *const BOXRepresentationContentTypeManifest;
 
 // Representation dimensions
 typedef NSString BOXRepresentationDimensions;
@@ -221,6 +218,15 @@ extern NSString *const BOXAPIParameterKeyMaxWidth;
 extern NSString *const BOXAPIParameterKeyMaxHeight;
 extern NSString *const BOXAPIParameterKeyAvatarType;
 
+// Recent Items Parameter Keys
+extern NSString *const BOXAPIParameterKeyNextMarker;
+extern NSString *const BOXAPIParameterKeyListType;
+
+/*!
+ * @deprecated Use BOXAPIParameterKeyNextMarker instead for Recents API.
+ */
+extern NSString *const BOXAPIParameterKeyMarker;
+
 // Metadata Parameter Key
 extern NSString *const BOXAPIParameterKeyTemplate;
 extern NSString *const BOXAPIParameterKeyScope;
@@ -229,6 +235,7 @@ extern NSString *const BOXAPIParameterKeyFilter;
 // Multipart parameter keys
 extern NSString *const BOXAPIMultipartParameterFieldKeyFile;
 extern NSString *const BOXAPIMultipartParameterFieldKeyParentID;
+extern NSString *const BOXAPIMultipartFormBoundary;
 
 // API object keys
 extern NSString *const BOXAPIObjectKeyAccess;
@@ -263,6 +270,7 @@ extern NSString *const BOXAPIObjectKeyName;
 extern NSString *const BOXAPIObjectKeyCreatedAt;
 extern NSString *const BOXAPIObjectKeyModifiedAt;
 extern NSString *const BOXAPIObjectKeyExpiresAt;
+extern NSString *const BOXAPIObjectKeyInteractedAt;
 extern NSString *const BOXAPIObjectKeyContentCreatedAt;
 extern NSString *const BOXAPIObjectKeyContentModifiedAt;
 extern NSString *const BOXAPIObjectKeyTrashedAt;
@@ -282,6 +290,7 @@ extern NSString *const BOXAPIObjectKeyItemStatus;
 extern NSString *const BOXAPIObjectKeyItemCollection;
 extern NSString *const BOXAPIObjectKeySyncState;
 extern NSString *const BOXAPIObjectKeyURL;
+extern NSString *const BOXAPIObjectKeyURLTemplate;
 extern NSString *const BOXAPIObjectKeyDownloadURL;
 extern NSString *const BOXAPIObjectKeyVanityURL;
 extern NSString *const BOXAPIObjectKeyIsPasswordEnabled;
@@ -295,6 +304,7 @@ extern NSString *const BOXAPIObjectKeyTrackingCodes;
 extern NSString *const BOXAPIObjectKeyCanSeeManagedUsers;
 extern NSString *const BOXAPIObjectKeyIsSyncEnabled;
 extern NSString *const BOXAPIObjectKeyStatus;
+extern NSString *const BOXAPIObjectKeyState;
 extern NSString *const BOXAPIObjectKeyJobTitle;
 extern NSString *const BOXAPIObjectKeyPhone;
 extern NSString *const BOXAPIObjectKeyAddress;
@@ -325,6 +335,8 @@ extern NSString *const BOXAPIObjectKeySharedLinkPassword;
 extern NSString *const BOXAPIObjectKeyCollectionType;
 extern NSString *const BOXAPIObjectKeyEventID;
 extern NSString *const BOXAPIObjectKeyEventType;
+extern NSString *const BOXAPIObjectKeyInteractionSharedLink;
+extern NSString *const BOXAPIObjectKeyInteractionType;
 extern NSString *const BOXAPIObjectKeySessionID;
 extern NSString *const BOXAPIObjectKeySource;
 extern NSString *const BOXAPIObjectKeyAcknowledgedAt;
@@ -363,6 +375,14 @@ extern NSString *const BOXAPIEventStreamTypeAll;
 extern NSString *const BOXAPIEventStreamTypeChanges;
 extern NSString *const BOXAPIEventStreamTypeSync;
 extern NSString *const BOXAPIEventStreamTypeAdminLogs;
+
+// API Recent Items Constants
+extern NSString *const BOXAPIRecentItemsListTypeShared;
+extern NSString *const BOXAPIRecentItemsInteractionTypeOpen;
+extern NSString *const BOXAPIRecentItemsInteractionTypePreview;
+extern NSString *const BOXAPIRecentItemsInteractionTypeComment;
+extern NSString *const BOXAPIRecentItemsInteractionTypeModification;
+extern NSString *const BOXAPIRecentItemsInteractionTypeUpload;
 
 // Standard Events
 extern NSString *const BOXAPIEventTypeItemCreate;
@@ -430,6 +450,27 @@ extern NSString *const BOXAPIEnterpriseEventTypeCollaborationInvite;
 extern NSString *const BOXAPIEnterpriseEventTypeCollaborationExpiration;
 extern NSString *const BOXAPIEnterpriseEventTypeItemSync;
 extern NSString *const BOXAPIEnterpriseEventTypeItemUnsync;
+
+//urlsessiontask cache dir, file prefix
+extern NSString *const BOXURLSessionTaskCacheDirectoryName;
+extern NSString *const BOXURLSessionTaskCacheOnGoingSessionTasksDirectoryName;
+extern NSString *const BOXURLSessionTaskCacheUsersDirectoryName;
+extern NSString *const BOXURLSessionTaskCacheExtensionSessionsDirectoryName;
+extern NSString *const BOXURLSessionTaskCacheDestinationFilePath;
+extern NSString *const BOXURLSessionTaskCacheResumeData;
+extern NSString *const BOXURLSessionTaskCacheResponse;
+extern NSString *const BOXURLSessionTaskCacheResponseData;
+extern NSString *const BOXURLSessionTaskCacheError;
+extern NSString *const BOXURLSessionTaskCacheUserIdAndAssociateId;
+
+typedef NS_ENUM(NSUInteger, BOXURLSessionTaskCacheFileType) {
+    BOXURLSessionTaskCacheFileTypeDestinationFilePath = 0,
+    BOXURLSessionTaskCacheFileTypeResumeData = 1,
+    BOXURLSessionTaskCacheFileTypeResponse = 2,
+    BOXURLSessionTaskCacheFileTypeResponseData = 3,
+    BOXURLSessionTaskCacheFileTypeError = 4,
+    BOXURLSessionTaskCacheFileTypeUserIdAndAssociateId = 5
+};
 
 typedef NS_ENUM(NSUInteger, BOXThumbnailSize) {
     BOXThumbnailSize32 = 32,

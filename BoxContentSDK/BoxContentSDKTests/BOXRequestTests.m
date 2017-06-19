@@ -8,6 +8,7 @@
 
 #import "BOXRequestTestCase.h"
 #import "BOXRequest_Private.h"
+#import "BOXAPIQueueManager.h"
 
 @interface BOXRequest (Testing)
 
@@ -53,11 +54,7 @@
 
 - (void)test_that_full_fields_string_for_files_is_correct
 {
-#ifdef BOX_REPRESENTATIONS_ENDPOINT_TESTS
-    NSString *expectedFieldsString = @"type,id,sequence_id,etag,sha1,name,description,size,path_collection,created_at,modified_at,trashed_at,purged_at,content_created_at,content_modified_at,created_by,modified_by,owned_by,shared_link,parent,item_status,version_number,comment_count,permissions,lock,extension,is_package,allowed_shared_link_access_levels,collections,representations";
-#else
     NSString *expectedFieldsString = @"type,id,sequence_id,etag,sha1,name,description,size,path_collection,created_at,modified_at,trashed_at,purged_at,content_created_at,content_modified_at,created_by,modified_by,owned_by,shared_link,parent,item_status,version_number,comment_count,permissions,lock,extension,is_package,allowed_shared_link_access_levels,collections";
-#endif
     NSString *actualFieldsString = [[[BOXRequest alloc] init] fullFileFieldsParameterString];
     XCTAssertEqualObjects(expectedFieldsString, actualFieldsString);
 }
@@ -71,18 +68,14 @@
 
 - (void)test_that_full_fields_string_for_bookmarks_is_correct
 {
-    NSString *expectedFieldsString = @"type,id,sequence_id,etag,name,url,created_at,modified_at,description,path_collection,trashed_at,purged_at,created_by,modified_by,owned_by,parent,item_status,shared_link,comment_count,permissions,allowed_shared_link_access_levels";
+    NSString *expectedFieldsString = @"type,id,sequence_id,etag,name,url,created_at,modified_at,description,path_collection,trashed_at,purged_at,created_by,modified_by,owned_by,parent,item_status,shared_link,comment_count,permissions,allowed_shared_link_access_levels,collections";
     NSString *actualFieldsString = [[[BOXRequest alloc] init] fullBookmarkFieldsParameterString];
     XCTAssertEqualObjects(expectedFieldsString, actualFieldsString);
 }
 
 - (void)test_that_full_fields_string_for_items_is_correct
 {
-#ifdef BOX_REPRESENTATIONS_ENDPOINT_TESTS
-    NSString *expectedFieldsString = @"type,id,sequence_id,etag,name,description,size,path_collection,created_at,modified_at,trashed_at,purged_at,content_created_at,content_modified_at,created_by,modified_by,owned_by,shared_link,parent,item_status,permissions,lock,extension,is_package,allowed_shared_link_access_levels,collections,folder_upload_email,sync_state,has_collaborations,is_externally_owned,can_non_owners_invite,allowed_invitee_roles,sha1,version_number,comment_count,representations,url";
-#else
     NSString *expectedFieldsString = @"type,id,sequence_id,etag,name,description,size,path_collection,created_at,modified_at,trashed_at,purged_at,content_created_at,content_modified_at,created_by,modified_by,owned_by,shared_link,parent,item_status,permissions,lock,extension,is_package,allowed_shared_link_access_levels,collections,folder_upload_email,sync_state,has_collaborations,is_externally_owned,can_non_owners_invite,allowed_invitee_roles,sha1,version_number,comment_count,url";
-#endif
     NSString *actualFieldsString = [[[BOXRequest alloc] init] fullItemFieldsParameterString];
     XCTAssertEqualObjects(expectedFieldsString, actualFieldsString);
 }
@@ -175,6 +168,22 @@
     [self expectationForNotification:BOXUserWasLoggedOutDueToErrorNotification object:nil handler:nil];
     [self waitForExpectationsWithTimeout:2.0 handler:nil];
 }
+
+- (void)test_that_account_deactivated_400_error_triggers_logout_notification
+{
+    BOXRequest *request = [[BOXRequest alloc] init];
+    
+    NSData *cannedResponseData =  [self cannedResponseDataWithName:@"account_deactivated"];
+    NSHTTPURLResponse *URLResponse = [self cannedURLResponseWithStatusCode:400 responseData:cannedResponseData];
+    [self setCannedURLResponse:URLResponse cannedResponseData:cannedResponseData forRequest:request];
+    request.operation = [[BOXAPIJSONOperation alloc] initWithURL:[request URLWithResource:nil ID:nil subresource:nil subID:nil] HTTPMethod:BOXAPIHTTPMethodGET body:nil queryParams:nil session:request.queueManager.session];
+    
+    [request performRequest];
+    
+    [self expectationForNotification:BOXUserWasLoggedOutDueToErrorNotification object:nil handler:nil];
+    [self waitForExpectationsWithTimeout:2.0 handler:nil];
+}
+
 
 - (void)test_that_unauthorized_401_error_triggers_logout_notification
 {

@@ -17,6 +17,7 @@
 
 @class BOXFileRequest;
 @class BOXFileCopyRequest;
+@class BOXFileCollaborationsRequest;
 @class BOXFileDeleteRequest;
 @class BOXFileDownloadRequest;
 @class BOXFileShareRequest;
@@ -59,6 +60,8 @@
 @class BOXItemSetCollectionsRequest;
 @class BOXCollectionItemsRequest;
 @class BOXCollectionFavoritesRequest;
+
+@class BOXRecentItemsRequest;
 
 @class BOXSearchRequest;
 
@@ -182,6 +185,14 @@
 - (void)retrieveCacheForFolderCollaborationsRequest:(BOXFolderCollaborationsRequest *)request
                                          completion:(BOXCollaborationArrayCompletionBlock)completionBlock;
 
+- (void)cacheFileCollaborationsRequest:(BOXFileCollaborationsRequest *)request
+                    withCollaborations:(NSArray *)collaborations
+                            nextMarker:(NSString *)nextMarker
+                                 error:(NSError *)error;
+
+- (void)retrieveCacheForFileCollaborationsRequest:(BOXFileCollaborationsRequest *)request
+                                       completion:(BOXFileCollaborationArrayCompletionBlock)completionBlock;
+
 - (void)cacheFolderPaginatedItemsRequest:(BOXFolderPaginatedItemsRequest *)request
                                withItems:(NSArray *)items
                                    limit:(NSUInteger)limit
@@ -289,6 +300,15 @@
 
 - (void)retrieveCacheForFavoriteCollectionRequest:(BOXCollectionFavoritesRequest *)request
                                   completionBlock:(BOXCollectionBlock)completionBlock;
+
+#pragma mark - Recent Items
+
+- (void)cacheRecentItemsRequest:(BOXRecentItemsRequest *)request
+                withRecentItems:(NSArray *)items
+                          error:(NSError *)error;
+
+- (void)retrieveCacheForRecentItemsRequest:(BOXRecentItemsRequest *)request
+                           completionBlock:(BOXRecentItemsBlock)completionBLock;
 
 #pragma mark - Search
 

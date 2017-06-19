@@ -7,14 +7,15 @@
 #import "BOXFileUploadNewVersionRequest.h"
 
 #import "BOXAPIMultipartToJSONOperation.h"
-#import "BOXAssetInputStream.h"
 #import "BOXFile.h"
-
-#import <AssetsLibrary/AssetsLibrary.h>
+#import "BOXAPIQueueManager.h"
+#import "BOXAbstractSession.h"
 
 @interface BOXFileUploadNewVersionRequest ()
 
 @property (nonatomic, readwrite, strong) NSString *localFilePath;
+@property (nonatomic, readwrite, strong) NSString *uploadMultipartCopyFilePath;
+@property (nonatomic, readwrite, copy) NSString *associateId;
 @property (nonatomic, readwrite, strong) NSData *fileData;
 
 @end
@@ -31,24 +32,21 @@
     return self;
 }
 
+- (instancetype)initWithFileID:(NSString *)fileID localPath:(NSString *)localPath uploadMultipartCopyFilePath:(NSString *)uploadMultipartCopyFilePath associateId:(NSString *)associateId
+{
+    self = [self initWithFileID:fileID localPath:localPath];
+    if (self != nil) {
+        self.uploadMultipartCopyFilePath = uploadMultipartCopyFilePath;
+        self.associateId = associateId;
+    }
+    return self;
+}
+
 - (instancetype)initWithFileID:(NSString *)fileID data:(NSData *)data
 {
     if (self = [super init]) {
         _fileData = data;
         _fileID = fileID;
-    }
-    
-    return self;
-}
-
-- (instancetype)initWithFileID:(NSString *)fileID
-                       ALAsset:(ALAsset *)asset
-                 assetsLibrary:(ALAssetsLibrary *)assetsLibrary
-{
-    if (self = [super init]) {
-        _fileID = fileID;
-        _asset = asset;
-        _assetsLibrary = assetsLibrary;
     }
     
     return self;
@@ -73,31 +71,18 @@
                                                                                       session:self.queueManager.session];
     
     if ([self.localFilePath length] > 0 && [[NSFileManager defaultManager] fileExistsAtPath:self.localFilePath]) {
-        NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:self.localFilePath];
-        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:self.localFilePath
-                                                                                        error:nil];
-        unsigned long long contentLength = [fileAttributes fileSize];
-        [operation appendMultipartPieceWithInputStream:inputStream
-                                         contentLength:contentLength
-                                             fieldName:BOXAPIMultipartParameterFieldKeyFile
-                                              filename:@"" // Box API ignores the filename when uploading a new version.
-                                              MIMEType:nil];
+        operation.uploadMultipartCopyFilePath = self.uploadMultipartCopyFilePath;
+        operation.associateId = self.associateId;
+        [operation appendMultipartPieceWithFilePath:self.localFilePath
+                                          fieldName:BOXAPIMultipartParameterFieldKeyFile
+                                           filename:@""
+                                           MIMEType:nil];
     } else if (self.fileData != nil) {
         [operation appendMultipartPieceWithData:self.fileData
                                       fieldName:BOXAPIMultipartParameterFieldKeyFile
                                        filename:@"" // Box API ignores the filename when uploading a new version.
                                        MIMEType:nil];
-    } else if (self.asset != nil) {
-        BOXAssetInputStream *inputStream =
-            [[BOXAssetInputStream alloc] initWithAssetRepresentation:self.asset.defaultRepresentation
-                                                       assetsLibrary:self.assetsLibrary];
-
-        [operation appendMultipartPieceWithInputStream:inputStream
-                                         contentLength:self.asset.defaultRepresentation.size
-                                             fieldName:BOXAPIMultipartParameterFieldKeyFile
-                                              filename:@""
-                                              MIMEType:nil];
-    } else {
+    }  else {
         BOXAssertFail(@"The File Upload Request was not given an existing file path to upload from or data to upload.");
     }
     
@@ -130,7 +115,9 @@
         };
     }
     uploadOperation.success = ^(NSURLRequest *request, NSHTTPURLResponse *response, NSDictionary *JSONDictionary) {
-        BOXFile *file = [[BOXFile alloc] initWithJSON:JSONDictionary];
+        //for background upload, it's possible to have invalid JSONDictionary even if we succeeded
+        //if the app crashes before we could cache the response data
+        BOXFile *file = JSONDictionary == nil ? nil : [[BOXFile alloc] initWithJSON:JSONDictionary];
         
         if ([self.cacheClient respondsToSelector:@selector(cacheFileUploadNewVersionRequest:withFile:error:)]) {
             [self.cacheClient cacheFileUploadNewVersionRequest:self withFile:file error:nil];

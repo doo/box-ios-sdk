@@ -12,12 +12,14 @@
 @class BOXAbstractSession;
 @class BOXAppUserSession;
 @class BOXRequest;
+@class BOXURLSessionManager;
 
 @interface BOXContentClient ()
 
 @property (nonatomic, readwrite, strong) BOXOAuth2Session *OAuth2Session;
 @property (nonatomic, readwrite, strong) BOXAppUserSession *appSession;
 @property (nonatomic, readwrite, strong) BOXAbstractSession *session;
+@property (nonatomic, readonly, strong) BOXURLSessionManager *urlSessionManager;
 
 + (NSMutableDictionary *)SDKClients;
 - (void)prepareRequest:(BOXRequest *)request;
@@ -30,8 +32,9 @@
  *  Complete the user's authentication from the URL with which the app was launched.
  *
  *  @param authenticationURL    The URL with which the app was launched.
- *  @param completionBlock      Called when the authentication has completed.
+ *  @param completion           Called when the authentication has completed.
  */
-- (void)completeAuthenticationWithURL:(NSURL *)authenticationURL completionBlock:(void (^)(BOXUser *user, NSError *error))completion;
+- (void)completeAuthenticationWithURL:(NSURL *)authenticationURL
+                      completionBlock:(void (^)(BOXUser *user, NSError *error))completion;
 
 @end

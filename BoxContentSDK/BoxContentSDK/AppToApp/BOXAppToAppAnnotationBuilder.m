@@ -8,10 +8,9 @@
 #import "BOXAppToAppAnnotationBuilder.h"
 #import "BOXAppToAppAnnotationKeys.h"
 #import "BOXAppToAppApplication.h"
+#import "BOXURLRequestSerialization.h"
 
 #import "BOXLog.h"
-#import "NSString+BoxURLHelper.h"
-
 
 @interface BOXAppToAppAnnotationBuilder()
 
@@ -103,7 +102,7 @@
 
     if (result != nil)
     {
-        result = [result stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        result = [result stringByRemovingPercentEncoding];
         [info removeObjectForKey:key];
     }
 
@@ -147,16 +146,15 @@
 + (NSString *)URLReadyStringForObject:(id)object
 {
     NSString *result = [self stringFromObject:object];
-
     // percent encode the string
-    return [NSString box_stringWithString:result URLEncoded:YES];
+    return BOXPercentEscapedStringFromString(result);
 }
 
 + (NSString *)stringFromAnnotationString:(NSString *)string
 {
     NSString *result = string;
     // percent de-encode the string
-    result = [result stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    result = [result stringByRemovingPercentEncoding];
 
     return result;
 }

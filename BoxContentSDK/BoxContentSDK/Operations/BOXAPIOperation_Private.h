@@ -8,16 +8,18 @@
 
 #import "BOXAPIOperation.h"
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, BOXAPIOperationState) {
     BOXAPIOperationStateReady = 1,
     BOXAPIOperationStateExecuting,
     BOXAPIOperationStateFinished
-} BOXAPIOperationState;
+};
 
 @interface BOXAPIOperation ()
 
 #pragma mark - NSOperation state
 @property (nonatomic, readwrite, assign) BOXAPIOperationState state;
+
+@property (nonatomic, readwrite, strong) NSURLSessionTask *sessionTask;
 
 #pragma mark initializers
 - (instancetype)initWithSession:(BOXAbstractSession *)session;
@@ -34,5 +36,20 @@ typedef enum {
 
 #pragma notification methods
 - (void)sendLogoutNotification;
+
+/**
+ * Create an NSURLSessionTask appropriate for this type of api operation
+ *
+ * @param outError  error if failed to create a session task
+ *
+ * @return a session task
+ */
+- (NSURLSessionTask *)createSessionTaskWithError:(NSError **)outError;
+
+/**
+ * Specify if a background download operation should be cancelled by producing resume data to be able
+ * to resume from where it was left off in another operation later.
+ */
+- (BOOL)shouldAllowResume;
 
 @end

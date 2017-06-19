@@ -19,6 +19,7 @@
 #import "BOXFileThumbnailRequest.h"
 #import "BOXPreflightCheckRequest.h"
 #import "BOXFileUploadNewVersionRequest.h"
+#import "BOXFileRepresentationDownloadRequest.h"
 
 @implementation BOXContentClient (File)
 
@@ -86,6 +87,16 @@
 }
 
 - (BOXFileDownloadRequest *)fileDownloadRequestWithID:(NSString *)fileID
+                                      toLocalFilePath:(NSString *)localFilePath
+                                          associateId:(NSString *)associateId
+{
+    BOXFileDownloadRequest *request = [[BOXFileDownloadRequest alloc] initWithLocalDestination:localFilePath fileID:fileID associateId:associateId];
+    [self prepareRequest:request];
+
+    return request;
+}
+
+- (BOXFileDownloadRequest *)fileDownloadRequestWithID:(NSString *)fileID
                                        toOutputStream:(NSOutputStream *)outputStream
 {
     BOXFileDownloadRequest *request = [[BOXFileDownloadRequest alloc] initWithOutputStream:outputStream fileID:fileID];
@@ -106,9 +117,17 @@
 - (BOXFileUploadRequest *)fileUploadRequestToFolderWithID:(NSString *)folderID
                                         fromLocalFilePath:(NSString *)localFilePath
 {
-    BOXFileUploadRequest *request = [[BOXFileUploadRequest alloc] initWithPath:localFilePath targetFolderID:folderID];
+    return [self fileUploadRequestInBackgroundToFolderWithID:folderID fromLocalFilePath:localFilePath uploadMultipartCopyFilePath:nil associateId:nil];
+}
+
+- (BOXFileUploadRequest *)fileUploadRequestInBackgroundToFolderWithID:(NSString *)folderID
+                                                    fromLocalFilePath:(NSString *)localFilePath
+                                          uploadMultipartCopyFilePath:(NSString *)uploadMultipartCopyFilePath
+                                                          associateId:(NSString *)associateId
+{
+    BOXFileUploadRequest *request = [[BOXFileUploadRequest alloc] initWithPath:localFilePath targetFolderID:folderID uploadMultipartCopyFilePath:uploadMultipartCopyFilePath associateId:associateId];
     [self prepareRequest:request];
-    
+
     return request;
 }
 
@@ -122,22 +141,20 @@
     return request;
 }
 
-- (BOXFileUploadRequest *)fileUploadRequestToFolderWithID:(NSString *)folderID
-                                              fromALAsset:(ALAsset *)asset
-                                        withAssetsLibrary:(ALAssetsLibrary *)assetsLibrary
-{
-    BOXFileUploadRequest *request = [[BOXFileUploadRequest alloc] initWithALAsset:asset assetsLibrary:assetsLibrary targetForlderID:folderID];
-    [self prepareRequest:request];
-    
-    return request;
-}
-
 - (BOXFileUploadNewVersionRequest *)fileUploadNewVersionRequestWithID:(NSString *)fileID
                                                     fromLocalFilePath:(NSString *)localFilePath
 {
-    BOXFileUploadNewVersionRequest *request = [[BOXFileUploadNewVersionRequest alloc] initWithFileID:fileID localPath:localFilePath];
+    return [self fileUploadNewVersionRequestInBackgroundWithFileID:fileID fromLocalFilePath:localFilePath uploadMultipartCopyFilePath:nil associateId:nil];
+}
+
+- (BOXFileUploadNewVersionRequest *)fileUploadNewVersionRequestInBackgroundWithFileID:(NSString *)fileID
+                                                                fromLocalFilePath:(NSString *)localFilePath
+                                                      uploadMultipartCopyFilePath:(NSString *)uploadMultipartCopyFilePath
+                                                                      associateId:(NSString *)associateId
+{
+    BOXFileUploadNewVersionRequest *request = [[BOXFileUploadNewVersionRequest alloc] initWithFileID:fileID localPath:localFilePath uploadMultipartCopyFilePath:uploadMultipartCopyFilePath associateId:associateId];
     [self prepareRequest:request];
-    
+
     return request;
 }
 
@@ -145,16 +162,6 @@
                                                              fromData:(NSData *)data
 {
     BOXFileUploadNewVersionRequest *request = [[BOXFileUploadNewVersionRequest alloc] initWithFileID:fileID data:data];
-    [self prepareRequest:request];
-    
-    return request;
-}
-
-- (BOXFileUploadNewVersionRequest *)fileUploadNewVersionRequestWithID:(NSString *)fileID
-                                                          fromALAsset:(ALAsset *)asset
-                                                    withAssetsLibrary:(ALAssetsLibrary *)assetsLibrary
-{
-    BOXFileUploadNewVersionRequest *request = [[BOXFileUploadNewVersionRequest alloc] initWithFileID:fileID ALAsset:asset assetsLibrary:assetsLibrary];
     [self prepareRequest:request];
     
     return request;
@@ -206,5 +213,26 @@
     return request;
 }
 
+- (BOXFileRepresentationDownloadRequest *)fileRepresentationDownloadRequestWithID:(NSString *)fileID
+                                                                  toLocalFilePath:(NSString *)localFilePath
+                                                                   representation:(BOXRepresentation *)representation
+{
+    BOXFileRepresentationDownloadRequest *request = [[BOXFileRepresentationDownloadRequest alloc] initWithLocalDestination:localFilePath
+                                                                                                                    fileID:fileID
+                                                                                                            representation:representation];
+    [self prepareRequest:request];
+    return request;
+}
+
+- (BOXFileRepresentationDownloadRequest *)fileRepresentationDownloadRequestWithID:(NSString *)fileID
+                                                                   toOutputStream:(NSOutputStream *)outputStream
+                                                                   representation:(BOXRepresentation *)representation
+{
+    BOXFileRepresentationDownloadRequest *request = [[BOXFileRepresentationDownloadRequest alloc] initWithOutputStream:outputStream
+                                                                                                                fileID:fileID
+                                                                                                        representation:representation];
+    [self prepareRequest:request];
+    return request;
+}
 
 @end
