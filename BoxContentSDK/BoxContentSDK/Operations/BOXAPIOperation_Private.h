@@ -34,7 +34,7 @@ typedef NS_ENUM(NSUInteger, BOXAPIOperationState) {
 #pragma mark error methods
 - (BOOL)shouldErrorTriggerLogout:(NSError *)error;
 
-#pragma notification methods
+#pragma mark notification methods
 - (void)sendLogoutNotification;
 
 /**
