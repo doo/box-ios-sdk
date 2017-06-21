@@ -6,7 +6,7 @@
 //
 //
 
-#import <BoxContentSDK/BOXContentSDK.h>
+#import <BOXContentSDK/BOXContentSDK.h>
 
 /**
  Represents an item recently interacted with by the current user.
