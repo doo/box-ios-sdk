@@ -6,7 +6,7 @@
 //
 //
 
-#import <BOXContentSDK/BOXContentSDK.h>
+#import <BoxContentSDK/BOXContentSDK.h>
 
 @class BOXRecentItemsRequest;
 
