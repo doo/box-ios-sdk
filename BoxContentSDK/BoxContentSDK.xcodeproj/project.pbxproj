@@ -1943,7 +1943,6 @@
 				599B19561E4BE65700709C27 /* Frameworks */,
 				599B19571E4BE65700709C27 /* Headers */,
 				599B19581E4BE65700709C27 /* Resources */,
-				0DA24CE41EA53B5F003E8EF0 /* Copy products to Carthage/Build/iOS */,
 			);
 			buildRules = (
 			);
@@ -2066,23 +2065,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		0DA24CE41EA53B5F003E8EF0 /* Copy products to Carthage/Build/iOS */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy products to Carthage/Build/iOS";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "CARTHAGE_BUILD_DIR=\"$SRCROOT/../Carthage/Build\"\n\n# Only copy when the Carthage/Build directory is a symlink\nif ! [ -L \"$CARTHAGE_BUILD_DIR\" ]; then exit 0; fi\n\nrsync --delete -av \"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME\"* \"$CARTHAGE_BUILD_DIR/iOS\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		15605D811A20132200C5EE5A /* Sources */ = {
@@ -2465,6 +2447,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
+				LLVM_LTO = YES_THIN;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = Box.BoxContentSDKFramework;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2686,6 +2669,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
+				LLVM_LTO = YES_THIN;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = Box.BoxContentSDKFramework;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2814,6 +2798,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
+				LLVM_LTO = YES_THIN;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = Box.BoxContentSDKFramework;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2853,6 +2838,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
+				LLVM_LTO = YES_THIN;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Box.BoxContentSDKFramework;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2894,6 +2880,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
+				LLVM_LTO = YES_THIN;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = Box.BoxContentSDKFramework;
 				PRODUCT_NAME = "$(TARGET_NAME)";
